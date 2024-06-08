@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TODO List</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      .task {
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>TODO List</h1>
+    <div id="tasks"></div>
+    <script>
+      async function fetchTasks() {
+        try {
+          const response = await fetch("/todo/api/v1.0/tasks");
+          const data = await response.json();
+          const tasksContainer = document.getElementById("tasks");
+          tasksContainer.innerHTML = "";
+          data.tasks.forEach((task) => {
+            const taskDiv = document.createElement("div");
+            taskDiv.className = "task";
+            taskDiv.innerHTML = `
+                        <h3>${task.title}</h3>
+                        <p>${task.description}</p>
+                        <p><strong>Done:</strong> ${task.done}</p>
+                    `;
+            tasksContainer.appendChild(taskDiv);
+          });
+        } catch (error) {
+          console.error("Error fetching tasks:", error);
+        }
+      }
+
+      window.onload = fetchTasks;
+    </script>
+  </body>
+</html>
