@@ -7,8 +7,10 @@ from flask import (
     request,
     send_from_directory,
 )
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 tasks = [
     {
@@ -52,9 +54,9 @@ def get_task(task_id):
 @app.route("/todo/api/v1.0/tasks", methods=["POST"])
 def create_task():
     if not request.json or not "title" in request.json:
-        abort(404)
+        abort(400)
     task = {
-        "id": tasks[-1]["id"] + 1,
+        "id": tasks[-1]["id"] + 1 if tasks else 1,
         "title": request.json["title"],
         "description": request.json.get("description", ""),
         "done": False,
@@ -72,9 +74,7 @@ def update_task(task_id):
         abort(400)
     if "title" in request.json and not isinstance(request.json["title"], str):
         abort(400)
-    if "description" in request.json and not isinstance(
-        request.json["description"], str
-    ):
+    if "description" in request.json and not isinstance(request.json["description"], str):
         abort(400)
     if "done" in request.json and not isinstance(request.json["done"], bool):
         abort(400)
@@ -94,4 +94,4 @@ def delete_task(task_id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5002)

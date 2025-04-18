@@ -3,45 +3,162 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TODO List</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-      }
-      .task {
-        margin: 10px 0;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-      }
-    </style>
+    <title>Forest Kanban</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
   </head>
   <body>
-    <h1>TODO List</h1>
-    <div id="tasks"></div>
-    <script>
-      async function fetchTasks() {
-        try {
-          const response = await fetch("/todo/api/v1.0/tasks");
-          const data = await response.json();
-          const tasksContainer = document.getElementById("tasks");
-          tasksContainer.innerHTML = "";
-          data.tasks.forEach((task) => {
-            const taskDiv = document.createElement("div");
-            taskDiv.className = "task";
-            taskDiv.innerHTML = `
-                        <h3>${task.title}</h3>
-                        <p>${task.description}</p>
-                        <p><strong>Done:</strong> ${task.done}</p>
-                    `;
-            tasksContainer.appendChild(taskDiv);
-          });
-        } catch (error) {
-          console.error("Error fetching tasks:", error);
-        }
-      }
+    <!-- Floating Leaves -->
+    <div class="floating-leaf"></div>
+    <div class="floating-leaf"></div>
+    <div class="floating-leaf"></div>
+    <div class="floating-leaf"></div>
+    <div class="floating-leaf"></div>
+    <div class="floating-leaf"></div>
+    <div class="floating-leaf"></div>
+    <div class="floating-leaf"></div>
+    <div class="floating-leaf"></div>
+    <div class="floating-leaf"></div>
 
-      window.onload = fetchTasks;
-    </script>
+    <div class="app-container">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-left">
+          <h1>🌲 Forest Kanban</h1>
+          <span class="badge">On Track</span>
+        </div>
+        <div class="header-right">
+          <button class="icon-button">
+            <span>🔍</span>
+          </button>
+          <button class="icon-button">
+            <span>➕</span>
+          </button>
+          <button class="icon-button">
+            <span>👤</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Search Bar -->
+      <div class="search-container">
+        <div class="search-bar">
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Search tasks..."
+            id="search-input"
+          />
+          <select class="filter-select" id="priority-filter">
+            <option value="all">All Priorities</option>
+            <option value="high">High Priority</option>
+            <option value="medium">Medium Priority</option>
+            <option value="low">Low Priority</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="nav-tabs">
+        <a href="#" class="nav-tab">Overview</a>
+        <a href="#" class="nav-tab">List</a>
+        <a href="#" class="nav-tab active">Board</a>
+        <a href="#" class="nav-tab">Timeline</a>
+        <a href="#" class="nav-tab">Calendar</a>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="board-container">
+        <!-- To Do Column -->
+        <div class="board-column">
+          <div class="column-header">
+            <h2>To do</h2>
+            <button class="icon-button small">➕</button>
+          </div>
+          <div class="task-list" id="todo-list">
+            <!-- Tasks will be added here -->
+          </div>
+          <button class="add-task-btn">+ Add Task</button>
+        </div>
+
+        <!-- Doing Column -->
+        <div class="board-column">
+          <div class="column-header">
+            <h2>Doing</h2>
+            <button class="icon-button small">➕</button>
+          </div>
+          <div class="task-list" id="doing-list">
+            <!-- Tasks will be added here -->
+          </div>
+          <button class="add-task-btn">+ Add Task</button>
+        </div>
+
+        <!-- Done Column -->
+        <div class="board-column">
+          <div class="column-header">
+            <h2>Done</h2>
+            <button class="icon-button small">➕</button>
+          </div>
+          <div class="task-list" id="done-list">
+            <!-- Tasks will be added here -->
+          </div>
+          <button class="add-task-btn">+ Add Task</button>
+        </div>
+      </main>
+    </div>
+
+    <!-- Task Edit Modal -->
+    <div class="modal-overlay" id="task-modal" style="display: none">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Edit Task</h3>
+          <button class="modal-close" id="close-modal">×</button>
+        </div>
+        <form class="modal-form" id="task-form">
+          <div class="form-group">
+            <label class="form-label" for="task-title">Title</label>
+            <input type="text" id="task-title" class="form-input" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="task-priority">Priority</label>
+            <select id="task-priority" class="form-input">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="task-date">Date Range</label>
+            <input
+              type="text"
+              id="task-date"
+              class="form-input"
+              placeholder="e.g., 12-14 Jul"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="task-assignee">Assignee</label>
+            <select id="task-assignee" class="form-input">
+              <option value="👤">👤 Me</option>
+              <option value="👥">👥 Team</option>
+            </select>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" id="cancel-task">
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   </body>
 </html>
